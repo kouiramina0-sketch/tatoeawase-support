@@ -1,4 +1,4 @@
 window.TATOEAWASE_FIREBASE_CONFIG = {
-  apiKey: "__FIREBASE_API_KEY__",
-  databaseUrl: "__FIREBASE_DATABASE_URL__"
+  apiKey: "AIzaSyCocMcvIc-0jk9-MVXRBGGDDfG_qjvr3j0",
+  databaseUrl: "https://tatoeawase-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
