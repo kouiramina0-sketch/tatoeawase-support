@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>たとえあわせ Remote QA Harness</title>
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#11152D;color:#fff;margin:0;padding:24px}
+    main{max-width:560px;margin:auto}
+    h1{font-size:24px}p{color:#A8AEC4;line-height:1.6}
+    input,button{width:100%;box-sizing:border-box;border-radius:14px;min-height:48px;font-size:16px;margin:6px 0;padding:0 12px}
+    input{border:1px solid #444b69;background:#fff;color:#11152D}
+    button{border:0;background:#FFD43B;color:#11152D;font-weight:900}
+    button.secondary{background:#1768F2;color:#fff}
+    button:disabled{opacity:.45}
+    pre{white-space:pre-wrap;background:#1C223E;border:1px solid #343B5A;border-radius:14px;padding:12px;min-height:100px}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Remote QA Harness</h1>
+  <p>開発中だけ使うテスト用ページです。ホストアプリで作成したルームに、疑似ゲスト2人を追加して1台のスマホで通信確認できます。</p>
+  <input id="roomCode" maxlength="6" placeholder="ルームコード 例: ABC234">
+  <button id="joinBots">疑似ゲスト2人を追加</button>
+  <button id="answerBots" class="secondary">疑似ゲスト2人の回答を送信</button>
+  <button id="leaveBots" class="secondary">疑似ゲストを退出</button>
+  <pre id="log">待機中</pre>
+</main>
+<script src="./config.js"></script>
+<script src="./dev-harness.js"></script>
+</body>
+</html>
