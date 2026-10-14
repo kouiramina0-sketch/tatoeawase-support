@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#11152D">
+  <title>たとえあわせ｜リモート参加</title>
+  <style>
+    :root{--ink:#11152D;--surface:#1C223E;--line:#343B5A;--white:#fff;--muted:#A8AEC4;--accent:#FFD43B;--pink:#F72572;--blue:#4CC9F0}
+    *{box-sizing:border-box}body{margin:0;background:var(--ink);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}
+    main{max-width:520px;margin:auto;min-height:100svh;padding:calc(env(safe-area-inset-top) + 24px) 18px calc(env(safe-area-inset-bottom) + 28px)}
+    h1{font-size:28px;margin:0 0 8px}.sub{color:var(--muted);font-size:14px;margin:0 0 20px}.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
+    label{display:block;font-weight:800;font-size:13px;margin:12px 0 7px}.input{width:100%;min-height:50px;border-radius:14px;border:1.5px solid var(--line);background:#fff;color:#15172a;font-size:17px;padding:0 14px}
+    button{width:100%;min-height:52px;border:0;border-radius:15px;background:var(--accent);color:var(--ink);font-size:16px;font-weight:900;margin-top:14px}button.secondary{background:#1768F2;color:#fff}button:disabled{opacity:.45}
+    .room{font-size:30px;letter-spacing:4px;font-weight:900;color:var(--accent);text-align:center}.status{text-align:center;font-weight:900;font-size:18px}.muted{color:var(--muted);font-size:13px;text-align:center}
+    .topic{font-size:26px;line-height:1.35;font-weight:900;text-align:center;color:var(--accent);margin:8px 0 18px}.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .choice{min-height:92px;margin:0;background:#fff;color:#17192A;border:3px solid transparent;padding:12px 10px}.choice.selected{border-color:var(--pink);background:#FFF1F6}
+    .choice .small{font-size:11px;color:#6f7488;margin-top:4px}.done{font-size:44px;text-align:center;margin:12px 0 6px}.error{background:#421d2a;border-color:#7c2944;color:#ffabc0}.hidden{display:none!important}
+    .badge{display:inline-block;padding:5px 10px;border-radius:999px;background:#292F4D;color:var(--blue);font-size:12px;font-weight:900}.footer{color:#73798e;text-align:center;font-size:11px;margin-top:22px}
+  </style>
+</head>
+<body>
+<main>
+  <span class="badge">REMOTE</span>
+  <h1>たとえあわせ</h1>
+  <p class="sub">ホストから共有されたルームに参加して、自分の答えをスマホから送れます。</p>
+
+  <section id="joinCard" class="card">
+    <label for="roomCode">ルームコード</label>
+    <input id="roomCode" class="input" autocomplete="one-time-code" maxlength="6" inputmode="text" placeholder="ABC234">
+    <label for="displayName">名前</label>
+    <input id="displayName" class="input" maxlength="12" placeholder="Kou">
+    <button id="joinButton">参加する →</button>
+  </section>
+
+  <section id="waitingCard" class="card hidden">
+    <div id="roomCodeView" class="room"></div>
+    <p id="waitingStatus" class="status">ホストの開始を待っています</p>
+    <p class="muted">この画面は開いたままでOKです。</p>
+  </section>
+
+  <section id="answerCard" class="card hidden">
+    <p id="roundLabel" class="muted"></p>
+    <div id="topicTitle" class="topic"></div>
+    <div id="choices" class="choices"></div>
+    <p id="answerHint" class="muted">自分の答えは、REVEALまで他の参加者には見えません。</p>
+  </section>
+
+  <section id="submittedCard" class="card hidden">
+    <div class="done">🔒</div>
+    <p class="status">回答を送信しました</p>
+    <p class="muted">全員の回答が揃うまで待ってください。</p>
+    <button id="changeAnswerButton" class="secondary">答えを変更する</button>
+  </section>
+
+  <section id="closedCard" class="card hidden">
+    <p class="status">このルームは終了しました</p>
+    <p class="muted">ホストが次のルームを作成した場合は、新しいリンクから参加してください。</p>
+  </section>
+
+  <section id="errorCard" class="card error hidden">
+    <p id="errorText" class="status"></p>
+  </section>
+
+  <div class="footer">K Works / たとえあわせ</div>
+</main>
+
+<script src="./config.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
