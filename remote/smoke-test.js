@@ -40,7 +40,13 @@
       }
     );
     if (!response.ok) {
-      throw new Error('Anonymous Auth ' + response.status + ': ' + (await response.text()).slice(0,120));
+      const detail = await response.text();
+      if (detail.includes('ADMIN_ONLY_OPERATION')) {
+        throw new Error(
+          '匿名認証がFirebase側で無効です。Authentication > ログイン方法 > 匿名 を「有効」にして保存してください。'
+        );
+      }
+      throw new Error('Anonymous Auth ' + response.status + ': ' + detail.slice(0,120));
     }
     const p = await response.json();
     const session = {uid:p.localId,idToken:p.idToken};
