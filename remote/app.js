@@ -6,7 +6,7 @@
   const els = Object.fromEntries([
     'joinCard','roomCode','displayName','joinButton','waitingCard','roomCodeView',
     'waitingStatus','answerCard','roundLabel','topicTitle','choices','answerHint',
-    'submittedCard','changeAnswerButton','closedCard','errorCard','errorText'
+    'confirmAnswerButton','submittedCard','changeAnswerButton','closedCard','errorCard','errorText'
   ].map(id => [id, document.getElementById(id)]));
 
   const state = {
@@ -17,6 +17,7 @@
     currentRoundNumber: null,
     selectedChoice: null,
     submittedRoundNumber: null,
+    editingAnswer: false,
     pollTimer: null,
     lastStatus: null,
   };
@@ -231,14 +232,27 @@
     }
   }
 
+  function markSelectedChoice(choiceIndex) {
+    state.selectedChoice = choiceIndex;
+    for (const node of els.choices.querySelectorAll('.choice')) {
+      node.classList.toggle(
+        'selected',
+        Number(node.dataset.choiceIndex) === choiceIndex
+      );
+    }
+    els.confirmAnswerButton.disabled = choiceIndex == null;
+  }
+
   function renderRound(round) {
     if (!round) return;
 
     state.currentRoundNumber = round.roundNumber;
     state.selectedChoice = null;
+    state.editingAnswer = false;
     els.roundLabel.textContent = '第' + round.roundNumber + '問';
     els.topicTitle.textContent = round.title;
     els.choices.innerHTML = '';
+    els.confirmAnswerButton.disabled = true;
 
     for (const choice of round.choices || []) {
       const button = document.createElement('button');
@@ -247,22 +261,26 @@
       button.dataset.choiceIndex = String(choice.index);
       button.innerHTML =
         '<div>' + escapeHtml(choice.displayLabel || choice.label) + '</div>';
-      button.addEventListener('click', () => submitAnswer(choice.index, button));
+      button.addEventListener('click', () => markSelectedChoice(choice.index));
       els.choices.appendChild(button);
     }
 
     showOnly('answerCard');
   }
 
-  async function submitAnswer(choiceIndex, button) {
+  async function submitAnswer() {
     clearError();
-    if (!state.roomId || state.currentRoundNumber == null) return;
+    if (
+      !state.roomId ||
+      state.currentRoundNumber == null ||
+      state.selectedChoice == null
+    ) return;
 
+    const choiceIndex = state.selectedChoice;
+    els.confirmAnswerButton.disabled = true;
     for (const node of els.choices.querySelectorAll('.choice')) {
-      node.classList.remove('selected');
       node.disabled = true;
     }
-    button.classList.add('selected');
 
     try {
       await db(
@@ -275,10 +293,11 @@
         }
       );
 
-      state.selectedChoice = choiceIndex;
       state.submittedRoundNumber = state.currentRoundNumber;
+      state.editingAnswer = false;
       showOnly('submittedCard');
     } catch (err) {
+      els.confirmAnswerButton.disabled = false;
       for (const node of els.choices.querySelectorAll('.choice')) {
         node.disabled = false;
       }
@@ -290,9 +309,13 @@
 
   function allowAnswerChange() {
     if (state.lastStatus !== 'answering') return;
+    state.editingAnswer = true;
     showOnly('answerCard');
     for (const node of els.choices.querySelectorAll('.choice')) {
       node.disabled = false;
+    }
+    if (state.selectedChoice != null) {
+      markSelectedChoice(state.selectedChoice);
     }
   }
 
@@ -345,11 +368,17 @@
         ) {
           state.submittedRoundNumber = round.roundNumber;
           state.selectedChoice = ownAnswer.choiceIndex;
-          showOnly('submittedCard');
+          if (!state.editingAnswer) {
+            showOnly('submittedCard');
+            return;
+          }
+          showOnly('answerCard');
+          markSelectedChoice(ownAnswer.choiceIndex);
           return;
         }
 
         state.submittedRoundNumber = null;
+        state.editingAnswer = false;
         showOnly('answerCard');
         return;
       }
@@ -393,6 +422,7 @@
   }
 
   els.joinButton.addEventListener('click', join);
+  els.confirmAnswerButton.addEventListener('click', submitAnswer);
   els.changeAnswerButton.addEventListener('click', allowAnswerChange);
 
   if (prefilledRoom && els.displayName.value) {
